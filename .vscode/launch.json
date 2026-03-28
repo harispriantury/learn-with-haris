@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // {
+    //   "type": "node",
+    //   "request": "launch",
+    //   "name": "Launch Program",
+    //   "skipFiles": ["<node_internals>/**"],
+    //   "program": "${workspaceFolder}/server/utils/sendMails.ts",
+    //   "outFiles": ["${workspaceFolder}/**/*.js"]
+    // },
+    // {
+    //   "type": "node",
+    //   "request": "launch",
+    //   "name": "Debug from server folder",
+    //   "runtimeExecutable": "npm",
+    //   "runtimeArgs": ["run", "dev"],
+    //   "cwd": "${workspaceFolder}/server",
+    //   "envFile": "${workspaceFolder}/server/.env",
+    //   "console": "integratedTerminal"
+    // },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/server",
+      "envFile": "${workspaceFolder}/server/.env"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Server (NO ts-node-dev)",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "program": "${workspaceFolder}/server/server.ts",
+      "cwd": "${workspaceFolder}/server",
+      "envFile": "${workspaceFolder}/server/.env",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
