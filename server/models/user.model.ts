@@ -1,7 +1,9 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bycrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+require("dotenv").config();
 
-const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export interface IUser extends Document {
   name: string;
@@ -14,6 +16,8 @@ export interface IUser extends Document {
     courseId: string;
   }[];
   comparePassword: (password: string) => Promise<boolean>;
+  SignAccessToken: () => string;
+  SignRefreshToken: () => string;
 }
 
 export interface IAvatar {
@@ -77,6 +81,14 @@ userSchema.pre<IUser>("save", async function () {
 // handle compare password
 userSchema.methods.comparePassword = async function (inputPassword: string) {
   return await bycrypt.compare(inputPassword, this.password);
+};
+
+userSchema.methods.SignAccessToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "");
+};
+
+userSchema.methods.SignRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || "");
 };
 
 const userModel: Model<IUser> = mongoose.model("User", userSchema);
