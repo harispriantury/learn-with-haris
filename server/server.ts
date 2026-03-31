@@ -1,9 +1,22 @@
 import app from "./app";
 import connectDb from "./utils/db";
-require("dotenv").config();
+import redisClient from "./utils/redis";
+import dotenv from "dotenv";
 
-// create new server
-app.listen(process.env.PORT, () => {
-  console.log(`server is connected with port ${process.env.PORT}`);
-  connectDb();
-});
+dotenv.config();
+
+const startServer = async () => {
+  try {
+    await connectDb(); // DB dulu
+    redisClient(); // Redis
+
+    app.listen(process.env.PORT, () => {
+      console.log(`Server running on port ${process.env.PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

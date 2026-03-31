@@ -21,15 +21,6 @@ app.use("/api/v1", userRouter);
 app.get("/test", (_req: Request, res: Response, _: NextFunction) => {
   res.json("ok");
 });
-//lskdjlfkj
-
-// app.all("/.*/", (req: Request, res: Response, next: NextFunction) => {
-//   const error = new Error(
-//     `Request with url : ${req.originalUrl} is not found`,
-//   ) as any;
-//   error.statusCode = 404;
-//   next(error);
-// });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const error: any = new Error(

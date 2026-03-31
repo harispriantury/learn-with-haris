@@ -1,8 +1,10 @@
 import { IUser } from "../models/user.model";
 import { Response } from "express";
-// import { redis } from "./redis";
+import NewRedisClient from "./redis";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
+const redis = NewRedisClient();
 
 interface ITokenOptions {
   expires: Date;
@@ -16,7 +18,7 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
   const accessToken = user.SignAccessToken();
   const refreshToken = user.SignRefreshToken();
 
-  //Redis
+  redis.set(user._id.toString(), JSON.stringify(user) as any);
 
   const accessTokenExpired = parseInt(
     process.env.ACCESS_TOKEN_EXPIRED || "300",
