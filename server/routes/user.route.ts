@@ -4,14 +4,16 @@ import {
   loginUser,
   logoutUser,
   registrationUser,
+  updateAccessToken,
 } from "../controllers/user.controller";
-import { isAuthenticated } from "../middleware/auth";
+import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 
 const userRouter = express.Router();
 
 userRouter.post("/registration", registrationUser);
 userRouter.post("/activation-user", activateUser);
 userRouter.post("/login", loginUser);
-userRouter.post("/logout", isAuthenticated, logoutUser);
+userRouter.get("/logout", isAuthenticated, logoutUser);
+userRouter.get("/refreshtoken", updateAccessToken);
 
 export default userRouter;

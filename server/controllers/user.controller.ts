@@ -3,11 +3,11 @@ import {} from "../";
 import { CatchAsyncError } from "../middleware/catchAsyncError";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../base/errorHandler";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMails";
-import { sendToken } from "../utils/jwt";
+import { accessTokenOption, refreshTokenOption, sendToken } from "../utils/jwt";
 import NewRedisClient from "../utils/redis";
 import dotenv from "dotenv";
 
@@ -172,5 +172,57 @@ export const logoutUser = CatchAsyncError(
         message: "Logged out successfully",
       });
     } catch (error) {}
+  },
+);
+
+//update access token
+export const updateAccessToken = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const refresh_token = req.cookies.refresh_token as string;
+      const decoded = jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN as string,
+      ) as JwtPayload;
+
+      const msg = "Could not refresh token";
+      if (!decoded) {
+        return next(new ErrorHandler(msg, 400));
+      }
+
+      const session = await redis.get(decoded.id as string);
+
+      if (!session) {
+        return next(new ErrorHandler(msg, 400));
+      }
+
+      const user = JSON.parse(session);
+
+      const accessToken = jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN as string,
+        {
+          expiresIn: "5m",
+        },
+      );
+
+      const refreshToken = jwt.sign(
+        { id: user._id },
+        process.env.REFRESH_TOKEN as string,
+        {
+          expiresIn: "7d",
+        },
+      );
+
+      res.cookie("access_token", accessToken, accessTokenOption);
+      res.cookie("refresh_token", refreshToken, refreshTokenOption);
+
+      res.status(200).json({
+        status: "success",
+        accessToken,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   },
 );
