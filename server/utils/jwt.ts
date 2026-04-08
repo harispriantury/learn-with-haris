@@ -32,7 +32,7 @@ export const accessTokenOption: ITokenOptions = {
 };
 
 export const refreshTokenOption: ITokenOptions = {
-  expires: new Date(Date.now() + refreshTokenExpired * 24 * 24 * 1000),
+  expires: new Date(Date.now() + refreshTokenExpired * 24 * 60 * 60 * 1000),
   maxAge: refreshTokenExpired * 24 * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
